@@ -43,7 +43,7 @@ for i in range(N):
     # Etiquetas
     if i < 50:
         etiquetas.append(0) # Feli
-    elif i>=50and i<101:
+    elif i>=50 and i<101:
         etiquetas.append(1) # tiste
     elif i >= 100 and i < 151:
         etiquetas.append(2)  # sorpesa
