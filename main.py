@@ -1,4 +1,5 @@
 import dlib
+import cvzone
 import cv2
 import numpy as np
 import os
@@ -8,6 +9,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import pickle
 
+img_feliz = cv2.imread("Resources/img_feliz.png", cv2.IMREAD_UNCHANGED)
+img_triste = cv2.imread("Resources/img_triste.png", cv2.IMREAD_UNCHANGED)
+
+scale_percent = 45
+
+width = int(img_feliz.shape[1] * scale_percent / 100)
+height = int(img_feliz.shape[0] * scale_percent / 100)
+
+img_feliz = cv2.resize(img_feliz, (width, height))
+
+width = int(img_triste.shape[1] * scale_percent / 100)
+height = int(img_triste.shape[0] * scale_percent / 100)
+
+img_triste = cv2.resize(img_triste, (width, height))
 
 predictor_path = os.path.abspath(os.getcwd()) + "\shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
@@ -41,7 +56,7 @@ for contador in range(1, 100 + 1):
                 old_points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
             for (x, y) in old_points:
                 lst_distancia.append(
-                    ((x - old_points[33][0]) * 2 + (y - old_points[33][1]) * 2) ** 1 / 2
+                    ((x - old_points[16][0]) * 2 + (y - old_points[16][1]) * 2) ** 1 / 2
                 )
             lst_of_lst_distancia.append(lst_distancia)
     except IndexError:
@@ -85,12 +100,12 @@ while True:
     try:
         if dets[0] is not None:
             shape = predictor(new_gray, dets[0])
-            old_points = np.zeros((49, 2), dtype=np.int32)
+            points = np.zeros((49, 2), dtype=np.int32)
             for i in range(0, 49):
-                old_points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
-            for (x, y) in old_points:
+                points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
+            for (x, y) in points:
                 dist.append(
-                    ((x - old_points[33][0]) * 2 + (y - old_points[33][1]) * 2) ** 1 / 2
+                    ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
                 cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
             arreglo = np.array(dist)
@@ -98,53 +113,15 @@ while True:
             y_predict = knn.predict(a)
             if y_predict == 0:
                 print("feliz")
-                cv2.putText(
-                    frame,
-                    "feliz",
-                    (100, 100),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    2,
-                    (0, 255, 255),
-                    5,
-                    bottomLeftOrigin=False,
+                frame = cvzone.overlayPNG(
+                    frame, img_feliz, [points[1][0] - 50, points[1][1] - 50]
                 )
             elif y_predict == 1:
-                cv2.putText(
-                    frame,
-                    "triste",
-                    (100, 100),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    2,
-                    (255, 0, 255),
-                    5,
-                    bottomLeftOrigin=False,
+                frame = cvzone.overlayPNG(
+                    frame, img_triste, [points[1][0] - 50, points[1][1] - 50]
                 )
                 print("triste")
-            elif y_predict == 2:
-                cv2.putText(
-                    frame,
-                    "sorpresa",
-                    (100, 100),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    2,
-                    (255, 255, 0),
-                    5,
-                    bottomLeftOrigin=False,
-                )
-                print("sorpresa")
-            elif y_predict == 3:
-                cv2.putText(
-                    frame,
-                    "enojado",
-                    (100, 100),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    2,
-                    (0, 255, 0),
-                    5,
-                    bottomLeftOrigin=False,
-                )
-                print("sorpresa")
-    except IndexError:
+    except:
         pass
     cv2.imshow("Video", frame)
     cv2.waitKey(1)
