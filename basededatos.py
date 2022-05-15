@@ -77,3 +77,4 @@ cv2.destroyAllWindows()
 with open("obj.pickle", "wb") as f:
     pickle.dump(distancia, f)
 print("Hecho")
+# quien es diego sniper 
