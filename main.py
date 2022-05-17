@@ -94,6 +94,7 @@ for k in k_range:
 cap = cv2.VideoCapture(0)
 while True:
     _, frame = cap.read()
+    frame_copy = frame.copy()
     new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     dets = detector(new_gray, 1)
     dist = []
@@ -108,6 +109,20 @@ while True:
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
                 cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
+            scale_percent = 20
+
+            # Se pone la imagen original debajo
+            width = int(frame_copy.shape[1] * scale_percent / 100)
+            height = int(frame_copy.shape[0] * scale_percent / 100)
+            dim = (width, height)
+            frame_copy = cv2.resize(frame_copy, dim, interpolation=cv2.INTER_AREA)
+            frame[
+                frame.shape[0] - frame_copy.shape[0] - 1 : frame.shape[0] - 1,
+                frame.shape[1] - frame_copy.shape[1] - 1 : frame.shape[1] - 1,
+                :,
+            ] = frame_copy
+
+            # Se toman las distancias de los puntos para realizar la prediccion
             arreglo = np.array(dist)
             a = scaler.transform(arreglo.reshape(1, arreglo.shape[0]))
             y_predict = knn.predict(a)
