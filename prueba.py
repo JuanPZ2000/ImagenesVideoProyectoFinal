@@ -21,7 +21,7 @@ while True:
                 points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
             for (x, y) in points:
                 cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
-            scale_percent = 20  # percent of original size
+            scale_percent = 20
             width = int(frame_copy.shape[1] * scale_percent / 100)
             height = int(frame_copy.shape[0] * scale_percent / 100)
             dim = (width, height)

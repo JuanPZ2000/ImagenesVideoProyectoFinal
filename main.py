@@ -30,7 +30,7 @@ predictor = dlib.shape_predictor(predictor_path)
 path = os.path.abspath(os.getcwd()) + "\images"
 N = len(os.listdir(path))
 
-lst_of_lst_distancia = []
+# lst_of_lst_distancia = []
 etiquetas = []
 puntos_interes = range(17, 66)
 for i in range(100):
@@ -43,30 +43,32 @@ for i in range(100):
     # else:
     #     etiquetas.append(3)  # enojado
 
-for contador in range(1, 100 + 1):
-    lst_distancia = []
-    frame = cv2.imread("./images2/image" + str(contador) + ".jpeg")
-    new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    dets = detector(new_gray, 1)
-    try:
-        if dets[0] is not None:
-            shape = predictor(new_gray, dets[0])
-            old_points = np.zeros((49, 2), dtype=np.int32)
-            for i in range(0, 49):
-                old_points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
-            for (x, y) in old_points:
-                lst_distancia.append(
-                    ((x - old_points[16][0]) * 2 + (y - old_points[16][1]) * 2) ** 1 / 2
-                )
-            lst_of_lst_distancia.append(lst_distancia)
-    except IndexError:
-        etiquetas.pop(contador - 1)
+# for contador in range(1, 100 + 1):
+#     lst_distancia = []
+#     frame = cv2.imread("./images2/image" + str(contador) + ".jpeg")
+#     new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#     dets = detector(new_gray, 1)
+#     try:
+#         if dets[0] is not None:
+#             shape = predictor(new_gray, dets[0])
+#             old_points = np.zeros((49, 2), dtype=np.int32)
+#             for i in range(0, 49):
+#                 old_points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
+#             for (x, y) in old_points:
+#                 lst_distancia.append(
+#                     ((x - old_points[16][0]) * 2 + (y - old_points[16][1]) * 2) ** 1 / 2
+#                 )
+#             lst_of_lst_distancia.append(lst_distancia)
+#     except IndexError:
+#         etiquetas.pop(contador - 1)
+
+# np.save("distancias", lst_of_lst_distancia)
 # with open("obj.pickle", "rb") as f:
 #     distancia = pickle.load(f)
 # print(distancia)
 
 #########################################################################################
-
+lst_of_lst_distancia = np.load("distancias.npy")
 # ML
 X_train, X_test, y_train, y_test = train_test_split(
     lst_of_lst_distancia, etiquetas, test_size=0.2, random_state=0
