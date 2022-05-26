@@ -3,10 +3,10 @@ import cv2
 import numpy as np
 import os
 
-predictor_path = os.path.abspath(os.getcwd()) + "\shape_predictor_68_face_landmarks.dat"
+predictor_path = os.path.abspath(os.getcwd()) + "/shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(predictor_path)
-path = os.path.abspath(os.getcwd()) + "\images"
+path = os.path.abspath(os.getcwd()) + "/images"
 N = len(os.listdir(path))
 
 

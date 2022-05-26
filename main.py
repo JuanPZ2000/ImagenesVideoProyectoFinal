@@ -8,12 +8,19 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import pickle
+import wiringpi
+import time
+import RPi.GPIO as GPIO
+
+    
+
+wiringpi.wiringPiSetup()
+wiringpi.pinMode(12, 1)
 
 img_feliz = cv2.imread("Resources/img_feliz.png", cv2.IMREAD_UNCHANGED)
 img_triste = cv2.imread("Resources/img_triste.png", cv2.IMREAD_UNCHANGED)
 
-scale_percent = 45
-
+scale_percent = 22
 width = int(img_feliz.shape[1] * scale_percent / 100)
 height = int(img_feliz.shape[0] * scale_percent / 100)
 
@@ -24,10 +31,10 @@ height = int(img_triste.shape[0] * scale_percent / 100)
 
 img_triste = cv2.resize(img_triste, (width, height))
 
-predictor_path = os.path.abspath(os.getcwd()) + "\shape_predictor_68_face_landmarks.dat"
+predictor_path = os.path.abspath(os.getcwd()) + "/shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(predictor_path)
-path = os.path.abspath(os.getcwd()) + "\images"
+path = os.path.abspath(os.getcwd()) + "/images"
 N = len(os.listdir(path))
 
 etiquetas = []
@@ -65,6 +72,13 @@ for k in k_range:
     print(y_test, y_predicted)
 
 cap = cv2.VideoCapture(0)
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(24, GPIO.OUT)
+rojo = GPIO.PWM(24, 100) 
+rojo.start(100)
+rojo.ChangeDutyCycle(100)
+i=0
+a=0
 while True:
     _, frame = cap.read()
     frame = cv2.resize(frame, (320, 240))
@@ -82,7 +96,7 @@ while True:
                 dist.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
+                #cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
             scale_percent = 20
 
             # Se pone la imagen original debajo
@@ -101,16 +115,20 @@ while True:
             a = scaler.transform(arreglo.reshape(1, arreglo.shape[0]))
             y_predict = knn.predict(a)
             if y_predict == 0:
-                print("feliz")
+                for i in range(100,-1,-1):
+                    rojo.ChangeDutyCycle(100 - i)
+                    time.sleep(0.02)
                 frame = cvzone.overlayPNG(
-                    frame, img_feliz, [points[1][0] - 50, points[1][1] - 50]
+                    frame, img_feliz, [points[1][0] - 25, points[1][1] - 30]
                 )
             elif y_predict == 1:
                 frame = cvzone.overlayPNG(
-                    frame, img_triste, [points[1][0] - 50, points[1][1] - 50]
+                    frame, img_triste, [points[1][0] - 25, points[1][1] - 30]
                 )
-                print("triste")
+                rojo.ChangeDutyCycle(0)
+                
+                
     except:
         pass
     cv2.imshow("Video", cv2.resize(frame, (1280, 720)))
-    cv2.waitKey(1)
+    cv2.waitKey(5)
