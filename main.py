@@ -12,7 +12,6 @@ import wiringpi
 import time
 import RPi.GPIO as GPIO
 
-    
 
 wiringpi.wiringPiSetup()
 wiringpi.pinMode(12, 1)
@@ -74,11 +73,11 @@ for k in k_range:
 cap = cv2.VideoCapture(0)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(24, GPIO.OUT)
-rojo = GPIO.PWM(24, 100) 
+rojo = GPIO.PWM(24, 100)
 rojo.start(100)
-rojo.ChangeDutyCycle(100)
-i=0
-a=0
+i = 0
+timer_1 = time.perf_counter()
+timer_2 = timer_1
 while True:
     _, frame = cap.read()
     frame = cv2.resize(frame, (320, 240))
@@ -96,7 +95,7 @@ while True:
                 dist.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                #cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
+                # cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
             scale_percent = 20
 
             # Se pone la imagen original debajo
@@ -115,9 +114,14 @@ while True:
             a = scaler.transform(arreglo.reshape(1, arreglo.shape[0]))
             y_predict = knn.predict(a)
             if y_predict == 0:
-                for i in range(100,-1,-1):
+                if (timer_1 - timer_2) > 0.02:
+                    i += 1
+                    if i == 100:
+                        i = 0
                     rojo.ChangeDutyCycle(100 - i)
-                    time.sleep(0.02)
+                    timer_2 = timer_1
+                else:
+                    timer_1 = time.perf_counter()
                 frame = cvzone.overlayPNG(
                     frame, img_feliz, [points[1][0] - 25, points[1][1] - 30]
                 )
@@ -126,8 +130,7 @@ while True:
                     frame, img_triste, [points[1][0] - 25, points[1][1] - 30]
                 )
                 rojo.ChangeDutyCycle(0)
-                
-                
+
     except:
         pass
     cv2.imshow("Video", cv2.resize(frame, (1280, 720)))
