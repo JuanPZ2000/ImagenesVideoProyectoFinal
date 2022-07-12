@@ -7,7 +7,7 @@ rojo.start(100)
 rojo.ChangeDutyCycle(100)
 while True:
     for i in range(100,-1,-1):
-        rojo.ChangeDutyCycle(40)
-                 
+        rojo.ChangeDutyCycle(100 - i)
+        time.sleep(0.02)           
 
     print("Ciclo completo")

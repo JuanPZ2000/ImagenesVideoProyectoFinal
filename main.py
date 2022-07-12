@@ -75,7 +75,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(24, GPIO.OUT)
 rojo = GPIO.PWM(24, 100)
 rojo.start(100)
-i = 0
+contador = 70
 timer_1 = time.perf_counter()
 timer_2 = timer_1
 while True:
@@ -114,11 +114,13 @@ while True:
             a = scaler.transform(arreglo.reshape(1, arreglo.shape[0]))
             y_predict = knn.predict(a)
             if y_predict == 0:
-                if (timer_1 - timer_2) > 0.02:
-                    i += 1
-                    if i == 100:
-                        i = 0
-                    rojo.ChangeDutyCycle(100 - i)
+                print(contador)
+                if (timer_1 - timer_2) > 0.001:
+                    
+                    contador = contador+5
+                    if contador == 100:
+                        contador = 70
+                    rojo.ChangeDutyCycle(100 - contador)
                     timer_2 = timer_1
                 else:
                     timer_1 = time.perf_counter()
