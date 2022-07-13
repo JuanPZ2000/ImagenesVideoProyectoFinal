@@ -40,5 +40,5 @@ for contador in range(1, 100 + 1):
         etiquetas.pop(contador - 1)
 
 np.save("distancias", lst_of_lst_distancia)
-
+np.save("etiquetas", etiquetas)
 #########################################################################################
