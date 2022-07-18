@@ -20,8 +20,9 @@ def lectura(path):
 predictor_path = os.path.abspath(os.getcwd()) + '\shape_predictor_68_face_landmarks.dat'
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(predictor_path)
-distancia = []
+lst_of_lst_distancia = []
 etiquetas = []
+puntos_interes = range(17, 66)
 path = os.path.abspath(os.getcwd())+'\ckplus'
 images=lectura(path)
 N=(len(images))
@@ -29,50 +30,34 @@ N=(len(images))
 #cv2.waitKey(0)
 
 for i in range(441,731):
-    frame = images[i]
+    if i < 647:
+        etiquetas.append(0)  # Feli
+    elif i >= 647 and i < 732:
+        etiquetas.append(1)  # time
 
+
+for contador in range(441,731):
+    lst_distancia = []
+    frame = images[contador]
+    #frame = cv2.resize(frame, (320, 240))
     new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     dets = detector(new_gray, 1)
-    distanciaaux = []
-
-    # Etiquetas
-    if i < 647:
-        etiquetas.append(0) # Feli
-    elif i>=647 and i<732:
-        etiquetas.append(1) # tiste
-
     try:
         if dets[0] is not None:
             shape = predictor(new_gray, dets[0])
-            old_points = np.zeros((68, 2), dtype=np.int32)
-            for i in range(0, 68):
-                old_points[i] = (shape.part(i).x, shape.part(i).y)
+            old_points = np.zeros((49, 2), dtype=np.int32)
+            for i in range(0, 49):
+                old_points[i] = (shape.part(i + 17).x, shape.part(i + 17).y)
             for (x, y) in old_points:
-                distanciaaux.append(((x - old_points[0][0]) * 2 + (y - old_points[0][1]) * 2) ** 1/2)
-                cv2.circle(frame, (x, y), 2, (0, 0, 255), -1)
-
-            distancia.append(distanciaaux)
-
+                lst_distancia.append(
+                    ((x - old_points[16][0]) * 2 + (y - old_points[16][1]) * 2) ** 1 / 2
+                )
+            lst_of_lst_distancia.append(lst_distancia)
     except IndexError:
-        distancia.append(list(np.zeros(68)))
-        pass
-    #if cv2.waitKey(1) & 0xFF == ord('q'):
-        #break
-    # cv2.imshow('frame', frame)
-    # cv2.waitKey(0)
-    # AQUI ACABA EL WHILE
-# After the loop release the cap object
-#vid.release()
-# Destroy all the windows
-cv2.destroyAllWindows()
-with open("obj.pickle", "wb") as f:
-    pickle.dump(distancia, f)
-print("Hecho")
+        etiquetas.pop(contador - 1)
+
+np.save("distancias", lst_of_lst_distancia)
+np.save("etiquetas", etiquetas)
 
 
-"""
-path = os.path.abspath(os.getcwd())+'\ckplus\happy'
-N = len(os.listdir(path))
-images=lectura(path,N)
-cv2.imshow('a',images[6])
-cv2.waitKey(0)"""
+

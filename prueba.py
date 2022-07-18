@@ -9,7 +9,6 @@ predictor = dlib.shape_predictor(predictor_path)
 path = os.path.abspath(os.getcwd()) + "/images"
 N = len(os.listdir(path))
 
-
 lst_of_lst_distancia = []
 etiquetas = []
 puntos_interes = range(17, 66)
