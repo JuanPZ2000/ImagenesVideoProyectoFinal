@@ -69,7 +69,7 @@ for i in range(N):
         #break
     # cv2.imshow('frame', frame)
     # cv2.waitKey(0)
-    # AQUI ACABA EL GUAIL
+    # AQUI ACABA EL WHILE
 # After the loop release the cap object
 #vid.release()
 # Destroy all the windows
@@ -77,4 +77,3 @@ cv2.destroyAllWindows()
 with open("obj.pickle", "wb") as f:
     pickle.dump(distancia, f)
 print("Hecho")
-# quien es diego sniper 
