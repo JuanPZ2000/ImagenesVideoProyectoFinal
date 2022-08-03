@@ -76,15 +76,16 @@ cap = cv2.VideoCapture(0)
 contador = 70
 timer_1 = time.perf_counter()
 timer_2 = timer_1
+
+# Ciclo
 while True:
     _, frame = cap.read()
-    # frame = cv2.imread("images2/image2.jpeg")
+    # frame = cv2.imread("img_pruebas/image2.jpeg")
     frame = cv2.resize(frame, (320, 240))
     [frame_copy, frame_copy_draw] = [frame.copy(), frame.copy()]
     dist = []
     dist2 = []
     try:
-
         [points, shape, flag_face] = deteccion_rostro(
             frame=frame, detector=detector, predictor=predictor
         )

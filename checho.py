@@ -5,41 +5,47 @@ import os
 import sys
 import pickle
 
-def lectura(path):
-    data_dir_list = os.listdir(path)
-    img_data_list = []
-    for dataset in data_dir_list:
-        img_list = os.listdir(path + '/' + dataset)
-        for img in img_list:
-            input_img = cv2.imread(path + '/' + dataset + '/' + img)
-            # input_img=cv2.cvtColor(input_img, cv2.COLOR_BGR2GRAY)
-            input_img_resize = cv2.resize(input_img, (48, 48))
-            img_data_list.append(input_img_resize)
-    return img_data_list
 
-predictor_path = os.path.abspath(os.getcwd()) + '\shape_predictor_68_face_landmarks.dat'
+def lectura(path):
+    # data_dir_list = os.listdir(path)
+    data_dir_list = ["happy", "sad"]
+    img_data_list = []
+    lst_count = []
+    counter = 0
+    for dataset in data_dir_list:
+        img_list = os.listdir(path + "/" + dataset)
+        for img in img_list:
+            input_img = cv2.imread(path + "/" + dataset + "/" + img)
+            # input_img=cv2.cvtColor(input_img, cv2.COLOR_BGR2GRAY)
+            # input_img_resize = cv2.resize(input_img, (48, 48))
+            img_data_list.append(input_img)
+            counter += 1
+        lst_count.append(counter)
+    return img_data_list, lst_count
+
+
+predictor_path = os.path.abspath(os.getcwd()) + "\shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
 predictor = dlib.shape_predictor(predictor_path)
 lst_of_lst_distancia = []
 etiquetas = []
-puntos_interes = range(17, 66)
-path = os.path.abspath(os.getcwd())+'\ckplus'
-images=lectura(path)
-N=(len(images))
-#cv2.imshow('a',images[731])
-#cv2.waitKey(0)
+path = os.path.abspath(os.getcwd()) + "\\database\\fer2013\\train"
+[images, lst_count] = lectura(path)
+N = len(images)
+# cv2.imshow('a',images[731])
+# cv2.waitKey(0)
 
-for i in range(441,731):
-    if i < 647:
+for i in range(lst_count[-1]):
+    if i < lst_count[0]:
         etiquetas.append(0)  # Feli
-    elif i >= 647 and i < 732:
-        etiquetas.append(1)  # time
+    elif i >= lst_count[0] and i < lst_count[1]:
+        etiquetas.append(1)  # tite
 
-
-for contador in range(441,731):
+contador_etiquetas = 0
+for contador in range(len(images)):
     lst_distancia = []
     frame = images[contador]
-    #frame = cv2.resize(frame, (320, 240))
+    # frame = cv2.resize(frame, (320, 240))
     new_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     dets = detector(new_gray, 1)
     try:
@@ -53,11 +59,9 @@ for contador in range(441,731):
                     ((x - old_points[16][0]) * 2 + (y - old_points[16][1]) * 2) ** 1 / 2
                 )
             lst_of_lst_distancia.append(lst_distancia)
+        contador_etiquetas += 1
     except IndexError:
-        etiquetas.pop(contador - 1)
+        etiquetas.pop(contador_etiquetas - 1)
 
 np.save("distancias", lst_of_lst_distancia)
 np.save("etiquetas", etiquetas)
-
-
-
