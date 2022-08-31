@@ -8,7 +8,8 @@ from src.functions import deteccion_rostro, predict
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import matthews_corrcoef
+from sklearn.svm import SVC
 import pickle
 
 
@@ -55,29 +56,25 @@ scaler = StandardScaler()
 scaler.fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
-training_acc = []
-lst_knn = []
-k_range = range(1, int(np.sqrt(len(y_train))))
-distance = "manhattan"
-for k in k_range:
-    knn = KNeighborsClassifier(
-        n_neighbors=k,
-        weights="distance",
-        metric=distance,
-        metric_params=None,
-        algorithm="brute",
-    )
-    knn.fit(X_train, y_train)
-    y_predicted = knn.predict(X_test)
-    # training_acc.append(knn.score(X_train, y_train))
-    lst_knn.append(knn)
-    print(y_test, y_predicted)
 
-# knn = lst_knn[training_acc.index(max(training_acc))]
+kernel = ["poly", "rbf", "sigmoid"]
+regularizacion = [0.01, 0.1, 1, 10, 100]
+grado_poly = range(1, 20)
+my_dict = {}
+# for i in kernel:
+#     for j in regularizacion:
+#         for k in grado_poly:
+#             svm_model = SVC(C=j, kernel=i, degree=k)
+#             svm_model.fit(X_train, y_train)
+#             my_dict[i, j, k] = matthews_corrcoef(y_test, svm_model.predict(X_test))
+#             print("voy en la iteracion {} {} {}".format(i, j, k))
+
+svm_model = SVC(C=10, kernel=kernel[0], degree=1)
+svm_model.fit(X_train, y_train)
 # Se realiza la comparacion por genero
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")
-X_men = knn.predict(lst_of_lst_distancia_men)
+X_men = svm_model.predict(lst_of_lst_distancia_men)
 f1_acurracy_men = f1_score(X_men, etiquetas_men)
 
 contador_men = 0
@@ -93,7 +90,7 @@ print(
 
 lst_of_lst_distancia_women = np.load("distancias_women.npy")
 etiquetas_women = np.load("etiquetas_women.npy")
-X_women = knn.predict(lst_of_lst_distancia_women)
+X_women = svm_model.predict(lst_of_lst_distancia_women)
 
 f1_acurracy_women = f1_score(X_women, etiquetas_women)
 contador_women = 0
@@ -143,7 +140,7 @@ while True:
                 shape.part(0).x : shape.part(16).x,
             ] = 0
             frame_copy_draw = predict(
-                knn=knn,
+                knn=svm_model,
                 dist=dist,
                 scaler=scaler,
                 points=points,
@@ -160,7 +157,7 @@ while True:
                 )
                 cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
             frame_copy_draw = predict(
-                knn=knn,
+                knn=svm_model,
                 dist=dist2,
                 scaler=scaler,
                 points=points,
