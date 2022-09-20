@@ -75,7 +75,7 @@ svm_model.fit(X_train, y_train)
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")
 X_men = svm_model.predict(lst_of_lst_distancia_men)
-f1_acurracy_men = f1_score(X_men, etiquetas_men)
+f1_acurracy_men = matthews_corrcoef(X_men, X_men)
 
 contador_men = 0
 for index, item in enumerate(X_men):
@@ -92,7 +92,7 @@ lst_of_lst_distancia_women = np.load("distancias_women.npy")
 etiquetas_women = np.load("etiquetas_women.npy")
 X_women = svm_model.predict(lst_of_lst_distancia_women)
 
-f1_acurracy_women = f1_score(X_women, etiquetas_women)
+f1_acurracy_women = matthews_corrcoef(X_men, X_men)
 contador_women = 0
 for index, item in enumerate(X_women):
     if item == etiquetas_women[index]:

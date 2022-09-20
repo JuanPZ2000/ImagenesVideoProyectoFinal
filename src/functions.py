@@ -49,5 +49,7 @@ def predict(knn, dist, scaler, points, frame_copy_draw, img_feliz, img_triste):
         frame_copy_draw = cvzone.overlayPNG(
             frame_copy_draw, img_triste, [points[1][0] - 25, points[1][1] - 30]
         )
+    elif y_predict == 2:
+        print("solplesa")
     return frame_copy_draw
     # rojo.ChangeDutyCycle(0)
