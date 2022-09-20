@@ -8,7 +8,7 @@ import pickle
 
 def lectura(path):
     # data_dir_list = os.listdir(path)
-    data_dir_list = ["happy", "sad"]
+    data_dir_list = ["happy", "sad","surprise"]
     img_data_list = []
     lst_count = []
     counter = 0
@@ -35,14 +35,17 @@ N = len(images)
 # cv2.imshow('a',images[731])
 # cv2.waitKey(0)
 
-for i in range(lst_count[-1]):
+for i in range(N):
     if i < lst_count[0]:
         etiquetas.append(0)  # Feli
     elif i >= lst_count[0] and i < lst_count[1]:
         etiquetas.append(1)  # tite
+    elif i >= lst_count[1] and i < lst_count[2]:
+        etiquetas.append(2)  # solplesa
 
 contador_etiquetas = 0
-for contador in range(len(images)):
+
+for contador in range(N):
     lst_distancia = []
     frame = images[contador]
     # frame = cv2.resize(frame, (320, 240))
