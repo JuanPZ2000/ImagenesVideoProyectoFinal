@@ -24,6 +24,7 @@ import time
 
 img_feliz = cv2.imread("Resources/img_feliz.png", cv2.IMREAD_UNCHANGED)
 img_triste = cv2.imread("Resources/img_triste.png", cv2.IMREAD_UNCHANGED)
+img_sorpresa = cv2.imread("Resources/img_sorpresa.png", cv2.IMREAD_UNCHANGED)
 
 scale_percent = 22
 width = int(img_feliz.shape[1] * scale_percent / 100)
@@ -35,6 +36,11 @@ width = int(img_triste.shape[1] * scale_percent / 100)
 height = int(img_triste.shape[0] * scale_percent / 100)
 
 img_triste = cv2.resize(img_triste, (width, height))
+
+width = int(img_sorpresa.shape[1] * scale_percent / 100)
+height = int(img_sorpresa.shape[0] * scale_percent / 100)
+
+img_sorpresa = cv2.resize(img_sorpresa, (width, height))
 
 predictor_path = os.path.abspath(os.getcwd()) + "/shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
@@ -132,7 +138,7 @@ while True:
                 dist.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
+                #cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
 
             tolerancia = 25
             frame[
@@ -147,6 +153,7 @@ while True:
                 frame_copy_draw=frame_copy_draw,
                 img_feliz=img_feliz,
                 img_triste=img_triste,
+                img_sorpresa=img_sorpresa,
             )
         # Segundo rostro
         [points, shape, flag_face] = deteccion_rostro(frame, detector, predictor)
@@ -164,6 +171,7 @@ while True:
                 frame_copy_draw=frame_copy_draw,
                 img_feliz=img_feliz,
                 img_triste=img_triste,
+                img_sorpresa=img_sorpresa,
             )
         # Se pone la imagen original debajo
         scale_percent = 20

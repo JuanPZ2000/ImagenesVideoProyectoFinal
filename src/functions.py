@@ -27,7 +27,7 @@ def deteccion_rostro(frame, detector, predictor):
     return [points, shape, flag_face]
 
 
-def predict(knn, dist, scaler, points, frame_copy_draw, img_feliz, img_triste):
+def predict(knn, dist, scaler, points, frame_copy_draw, img_feliz, img_triste,img_sorpresa):
     arreglo = np.array(dist)
     predict_item = scaler.transform(arreglo.reshape(1, arreglo.shape[0]))
     y_predict = knn.predict(predict_item)
@@ -50,6 +50,8 @@ def predict(knn, dist, scaler, points, frame_copy_draw, img_feliz, img_triste):
             frame_copy_draw, img_triste, [points[1][0] - 25, points[1][1] - 30]
         )
     elif y_predict == 2:
-        print("solplesa")
+        frame_copy_draw = cvzone.overlayPNG(
+            frame_copy_draw, img_sorpresa, [points[1][0] - 25, points[1][1] - 30]
+        )
     return frame_copy_draw
     # rojo.ChangeDutyCycle(0)
