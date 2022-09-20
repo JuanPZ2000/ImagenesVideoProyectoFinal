@@ -102,7 +102,7 @@ lst_of_lst_distancia_women = np.load("distancias_women.npy")
 etiquetas_women = np.load("etiquetas_women.npy")
 X_women = knn.predict(lst_of_lst_distancia_women)
 
-f1_acurracy_women = f1_score(X_women, etiquetas_women)
+f1_acurracy_women = matthews_corrcoef(X_women, etiquetas_women)
 contador_women = 0
 for index, item in enumerate(X_women):
     if item == etiquetas_women[index]:

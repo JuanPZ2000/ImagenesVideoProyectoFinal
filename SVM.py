@@ -26,7 +26,7 @@ img_feliz = cv2.imread("Resources/img_feliz.png", cv2.IMREAD_UNCHANGED)
 img_triste = cv2.imread("Resources/img_triste.png", cv2.IMREAD_UNCHANGED)
 img_sorpresa = cv2.imread("Resources/img_sorpresa.png", cv2.IMREAD_UNCHANGED)
 
-scale_percent = 22
+scale_percent = 8
 width = int(img_feliz.shape[1] * scale_percent / 100)
 height = int(img_feliz.shape[0] * scale_percent / 100)
 
