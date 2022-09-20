@@ -81,7 +81,7 @@ svm_model.fit(X_train, y_train)
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")
 X_men = svm_model.predict(lst_of_lst_distancia_men)
-f1_acurracy_men = matthews_corrcoef(X_men, X_men)
+f1_acurracy_men = matthews_corrcoef(X_men, etiquetas_men)
 
 contador_men = 0
 for index, item in enumerate(X_men):
@@ -89,7 +89,7 @@ for index, item in enumerate(X_men):
         contador_men += 1
 porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst_distancia_men)
 print(
-    "El porcentaje de accuracy para del sistema para los hombres es de: {}% y tiene F1 score de: {}".format(
+    "El porcentaje de accuracy para del sistema para los hombres es de: {}% y coeficiente de matthews score de: {}".format(
         porcentaje_accuracy_men, f1_acurracy_men
     )
 )
@@ -98,7 +98,7 @@ lst_of_lst_distancia_women = np.load("distancias_women.npy")
 etiquetas_women = np.load("etiquetas_women.npy")
 X_women = svm_model.predict(lst_of_lst_distancia_women)
 
-f1_acurracy_women = matthews_corrcoef(X_men, X_men)
+f1_acurracy_women = matthews_corrcoef(X_women, etiquetas_women)
 contador_women = 0
 for index, item in enumerate(X_women):
     if item == etiquetas_women[index]:
@@ -106,7 +106,7 @@ for index, item in enumerate(X_women):
 
 porcentaje_accuracy_women = contador_women * 100 / len(lst_of_lst_distancia_women)
 print(
-    "El porcentaje de accuracy para del sistema para las mujeres es de: {}% y tiene F1 score de: {}".format(
+    "El porcentaje de accuracy para del sistema para las mujeres es de: {}% y coeficiente de matthews score de: {}".format(
         porcentaje_accuracy_women, f1_acurracy_women
     )
 )
@@ -138,7 +138,7 @@ while True:
                 dist.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                #cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
+                # cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
 
             tolerancia = 25
             frame[

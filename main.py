@@ -7,6 +7,7 @@ import sys
 from src.functions import deteccion_rostro, predict
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
+from sklearn.metrics import matthews_corrcoef
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import pickle
@@ -23,6 +24,7 @@ import time
 
 img_feliz = cv2.imread("Resources/img_feliz.png", cv2.IMREAD_UNCHANGED)
 img_triste = cv2.imread("Resources/img_triste.png", cv2.IMREAD_UNCHANGED)
+img_sorpresa = cv2.imread("Resources/img_sorpresa.png", cv2.IMREAD_UNCHANGED)
 
 scale_percent = 22
 width = int(img_feliz.shape[1] * scale_percent / 100)
@@ -34,6 +36,11 @@ width = int(img_triste.shape[1] * scale_percent / 100)
 height = int(img_triste.shape[0] * scale_percent / 100)
 
 img_triste = cv2.resize(img_triste, (width, height))
+
+width = int(img_sorpresa.shape[1] * scale_percent / 100)
+height = int(img_sorpresa.shape[0] * scale_percent / 100)
+
+img_sorpresa = cv2.resize(img_sorpresa, (width, height))
 
 predictor_path = os.path.abspath(os.getcwd()) + "/shape_predictor_68_face_landmarks.dat"
 detector = dlib.get_frontal_face_detector()
@@ -78,7 +85,7 @@ for k in k_range:
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")
 X_men = knn.predict(lst_of_lst_distancia_men)
-f1_acurracy_men = f1_score(X_men, etiquetas_men)
+f1_acurracy_men = matthews_corrcoef(X_men, etiquetas_men)
 
 contador_men = 0
 for index, item in enumerate(X_men):
@@ -86,7 +93,7 @@ for index, item in enumerate(X_men):
         contador_men += 1
 porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst_distancia_men)
 print(
-    "El porcentaje de accuracy para del sistema para los hombres es de: {}% y tiene F1 score de: {}".format(
+    "El porcentaje de accuracy para del sistema para los hombres es de: {}% y coeficiente de matthews de: {}".format(
         porcentaje_accuracy_men, f1_acurracy_men
     )
 )
@@ -103,7 +110,7 @@ for index, item in enumerate(X_women):
 
 porcentaje_accuracy_women = contador_women * 100 / len(lst_of_lst_distancia_women)
 print(
-    "El porcentaje de accuracy para del sistema para las mujeres es de: {}% y tiene F1 score de: {}".format(
+    "El porcentaje de accuracy para del sistema para las mujeres es de: {}% y coeficiente de matthews de: {}".format(
         porcentaje_accuracy_women, f1_acurracy_women
     )
 )
@@ -150,6 +157,7 @@ while True:
                 frame_copy_draw=frame_copy_draw,
                 img_feliz=img_feliz,
                 img_triste=img_triste,
+                img_sorpresa=img_sorpresa,
             )
         # Segundo rostro
         [points, shape, flag_face] = deteccion_rostro(frame, detector, predictor)
@@ -167,6 +175,7 @@ while True:
                 frame_copy_draw=frame_copy_draw,
                 img_feliz=img_feliz,
                 img_triste=img_triste,
+                img_sorpresa=img_sorpresa,
             )
         # Se pone la imagen original debajo
         scale_percent = 20
