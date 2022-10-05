@@ -75,10 +75,12 @@ my_dict = {}
 #         )
 #         clf.fit(X_train, y_train)
 #         my_dict[i, j] = matthews_corrcoef(y_test, clf.predict(X_test))
-# para dos emociones
+
 # clf = RandomForestClassifier(n_estimators=n_estimators[5], criterion=criterio[1])
 # clf.fit(X_train, y_train)
-clf = joblib.load("my_random_forest.joblib")
+
+# clf = joblib.load("my_random_forest.joblib") # dos emociones
+clf = joblib.load("my_random_forest_3_emotions.joblib")  # tres emociones
 # Se realiza la comparacion por genero
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")

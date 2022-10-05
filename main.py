@@ -80,13 +80,20 @@ distance = "manhattan"
 #     dict_knn[k] = matthews_corrcoef(y_test, y_predicted)
 #     print(y_test, y_predicted)
 # max(dict_knn, key=dict_knn.get)  # se toma el valor maximo
+# knn = knn = KNeighborsClassifier(
+#     n_neighbors=13,
+#     weights="distance",
+#     metric=distance,
+#     metric_params=None,
+#     algorithm="brute",
+# ) # dos emociones
 knn = knn = KNeighborsClassifier(
-    n_neighbors=13,
+    n_neighbors=35,
     weights="distance",
     metric=distance,
     metric_params=None,
     algorithm="brute",
-)
+)  # tres emociones
 knn.fit(X_train, y_train)
 
 # Se realiza la comparacion por genero

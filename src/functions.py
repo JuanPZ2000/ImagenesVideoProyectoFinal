@@ -17,7 +17,8 @@ from sklearn.metrics import confusion_matrix
 def get_model_metrics(model, lst_of_lst, etiquetas, gender=None):
     X_men = model.predict(lst_of_lst)
     matheus_acurracy_men = matthews_corrcoef(etiquetas, X_men)
-    f1_accuracy_men = f1_score(etiquetas, X_men)
+    # f1_accuracy_men = f1_score(etiquetas, X_men) # para dos emociones
+    f1_accuracy_men = 0
     confusion_matrix_men = confusion_matrix(etiquetas, X_men)
 
     contador_men = 0
@@ -30,7 +31,7 @@ def get_model_metrics(model, lst_of_lst, etiquetas, gender=None):
             gender, porcentaje_accuracy_men, matheus_acurracy_men, f1_accuracy_men
         )
     )
-    return confusion_matrix
+    return confusion_matrix_men
 
 
 def deteccion_rostro(frame, detector, predictor):

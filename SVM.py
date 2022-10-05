@@ -76,7 +76,8 @@ my_dict = {}
 #             my_dict[i, j, k] = matthews_corrcoef(y_test, svm_model.predict(X_test))
 #             print("voy en la iteracion {} {} {}".format(i, j, k))
 
-svm_model = SVC(C=10, kernel=kernel[0], degree=1)  # Es para 2 emociones
+# svm_model = SVC(C=10, kernel=kernel[0], degree=1)  # Es para 2 emociones
+svm_model = SVC(C=10, kernel=kernel[0], degree=1)  # Es para 3 emociones
 svm_model.fit(X_train, y_train)
 # Se realiza la comparacion por genero
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
