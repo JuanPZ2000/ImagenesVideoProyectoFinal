@@ -26,7 +26,7 @@ img_feliz = cv2.imread("Resources/img_feliz.png", cv2.IMREAD_UNCHANGED)
 img_triste = cv2.imread("Resources/img_triste.png", cv2.IMREAD_UNCHANGED)
 img_sorpresa = cv2.imread("Resources/img_sorpresa.png", cv2.IMREAD_UNCHANGED)
 
-scale_percent = 22
+scale_percent = 8
 width = int(img_feliz.shape[1] * scale_percent / 100)
 height = int(img_feliz.shape[0] * scale_percent / 100)
 
@@ -124,7 +124,7 @@ cap = cv2.VideoCapture(0)
 contador = 70
 timer_1 = time.perf_counter()
 timer_2 = timer_1
-
+pTime=0
 # Ciclo
 while True:
     _, frame = cap.read()
@@ -142,7 +142,7 @@ while True:
                 dist.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
+               # cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
 
             tolerancia = 25
             frame[
@@ -166,7 +166,7 @@ while True:
                 dist2.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
+                #cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
             frame_copy_draw = predict(
                 knn=knn,
                 dist=dist2,
@@ -191,5 +191,11 @@ while True:
 
     except:
         pass
+    cTime=time.time()
+    
+    fps=1/(cTime-pTime)
+    pTime=cTime
+
+    cv2.putText(frame_copy_draw, f'FPS: {int(fps)}',(150,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,0),1)
     cv2.imshow("Video", cv2.resize(frame_copy_draw, (1280, 720)))
     cv2.waitKey(5)

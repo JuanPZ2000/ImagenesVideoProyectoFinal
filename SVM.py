@@ -120,7 +120,7 @@ cap = cv2.VideoCapture(0)
 contador = 70
 timer_1 = time.perf_counter()
 timer_2 = timer_1
-
+pTime=0
 # Ciclo
 while True:
     _, frame = cap.read()
@@ -187,5 +187,11 @@ while True:
 
     except:
         pass
+    cTime=time.time()
+    
+    fps=1/(cTime-pTime)
+    pTime=cTime
+
+    cv2.putText(frame_copy_draw, f'FPS: {int(fps)}',(150,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,0),1)
     cv2.imshow("Video", cv2.resize(frame_copy_draw, (1280, 720)))
     cv2.waitKey(5)
