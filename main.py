@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import os
 import sys
-from src.functions import deteccion_rostro, predict
+from src.functions import deteccion_rostro, predict, get_model_metrics
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 from sklearn.metrics import matthews_corrcoef
@@ -62,58 +62,49 @@ scaler = StandardScaler()
 scaler.fit(X_train)
 X_train = scaler.transform(X_train)
 X_test = scaler.transform(X_test)
-training_acc = []
-lst_knn = []
+dict_knn = {}
 k_range = range(1, int(np.sqrt(len(y_train))))
 distance = "manhattan"
-for k in k_range:
-    knn = KNeighborsClassifier(
-        n_neighbors=k,
-        weights="distance",
-        metric=distance,
-        metric_params=None,
-        algorithm="brute",
-    )
-    knn.fit(X_train, y_train)
-    y_predicted = knn.predict(X_test)
-    # training_acc.append(knn.score(X_train, y_train))
-    lst_knn.append(knn)
-    print(y_test, y_predicted)
+# for k in k_range:
+#     knn = KNeighborsClassifier(
+#         n_neighbors=k,
+#         weights="distance",
+#         metric=distance,
+#         metric_params=None,
+#         algorithm="brute",
+#     )
+#     knn.fit(X_train, y_train)
+#     y_predicted = knn.predict(X_test)
+#     # training_acc.append(knn.score(X_train, y_train))
 
-# knn = lst_knn[training_acc.index(max(training_acc))]
+#     dict_knn[k] = matthews_corrcoef(y_test, y_predicted)
+#     print(y_test, y_predicted)
+# max(dict_knn, key=dict_knn.get)  # se toma el valor maximo
+knn = knn = KNeighborsClassifier(
+    n_neighbors=13,
+    weights="distance",
+    metric=distance,
+    metric_params=None,
+    algorithm="brute",
+)
+knn.fit(X_train, y_train)
+
 # Se realiza la comparacion por genero
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")
-X_men = knn.predict(lst_of_lst_distancia_men)
-f1_acurracy_men = matthews_corrcoef(X_men, etiquetas_men)
-
-contador_men = 0
-for index, item in enumerate(X_men):
-    if item == etiquetas_men[index]:
-        contador_men += 1
-porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst_distancia_men)
-print(
-    "El porcentaje de accuracy para del sistema para los hombres es de: {}% y coeficiente de matthews de: {}".format(
-        porcentaje_accuracy_men, f1_acurracy_men
-    )
+confusion_matrix_men = get_model_metrics(
+    knn, lst_of_lst_distancia_men, etiquetas_men, "hombres"
 )
+
 
 lst_of_lst_distancia_women = np.load("distancias_women.npy")
 etiquetas_women = np.load("etiquetas_women.npy")
-X_women = knn.predict(lst_of_lst_distancia_women)
-
-f1_acurracy_women = matthews_corrcoef(X_women, etiquetas_women)
-contador_women = 0
-for index, item in enumerate(X_women):
-    if item == etiquetas_women[index]:
-        contador_women += 1
-
-porcentaje_accuracy_women = contador_women * 100 / len(lst_of_lst_distancia_women)
-print(
-    "El porcentaje de accuracy para del sistema para las mujeres es de: {}% y coeficiente de matthews de: {}".format(
-        porcentaje_accuracy_women, f1_acurracy_women
-    )
+confusion_matrix_women = get_model_metrics(
+    knn, lst_of_lst_distancia_women, etiquetas_women, "mujeres"
 )
+
+confusion_matrix = get_model_metrics(knn, X_test, y_test, "general")
+
 a = 1
 
 cap = cv2.VideoCapture(0)
@@ -124,7 +115,7 @@ cap = cv2.VideoCapture(0)
 contador = 70
 timer_1 = time.perf_counter()
 timer_2 = timer_1
-pTime=0
+pTime = 0
 # Ciclo
 while True:
     _, frame = cap.read()
@@ -142,7 +133,7 @@ while True:
                 dist.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-               # cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
+            # cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
 
             tolerancia = 25
             frame[
@@ -166,7 +157,7 @@ while True:
                 dist2.append(
                     ((x - points[16][0]) * 2 + (y - points[16][1]) * 2) ** 1 / 2
                 )
-                #cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
+                # cv2.circle(frame_copy_draw, (x, y), 2, (0, 0, 255), -1)
             frame_copy_draw = predict(
                 knn=knn,
                 dist=dist2,
@@ -191,11 +182,19 @@ while True:
 
     except:
         pass
-    cTime=time.time()
-    
-    fps=1/(cTime-pTime)
-    pTime=cTime
+    cTime = time.time()
 
-    cv2.putText(frame_copy_draw, f'FPS: {int(fps)}',(150,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,0),1)
+    fps = 1 / (cTime - pTime)
+    pTime = cTime
+
+    cv2.putText(
+        frame_copy_draw,
+        f"FPS: {int(fps)}",
+        (150, 50),
+        cv2.FONT_HERSHEY_COMPLEX,
+        1,
+        (255, 255, 0),
+        1,
+    )
     cv2.imshow("Video", cv2.resize(frame_copy_draw, (1280, 720)))
     cv2.waitKey(5)

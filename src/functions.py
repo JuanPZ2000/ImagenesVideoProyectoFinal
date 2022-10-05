@@ -8,6 +8,29 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import pickle
+from sklearn.metrics import f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import confusion_matrix
+
+
+def get_model_metrics(model, lst_of_lst, etiquetas, gender=None):
+    X_men = model.predict(lst_of_lst)
+    matheus_acurracy_men = matthews_corrcoef(etiquetas, X_men)
+    f1_accuracy_men = f1_score(etiquetas, X_men)
+    confusion_matrix_men = confusion_matrix(etiquetas, X_men)
+
+    contador_men = 0
+    for index, item in enumerate(X_men):
+        if item == etiquetas[index]:
+            contador_men += 1
+    porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst)
+    print(
+        "El porcentaje de accuracy para del sistema para {}  es de: {}% y coeficiente de matthews score de: {}, F1 score de {}".format(
+            gender, porcentaje_accuracy_men, matheus_acurracy_men, f1_accuracy_men
+        )
+    )
+    return confusion_matrix
 
 
 def deteccion_rostro(frame, detector, predictor):

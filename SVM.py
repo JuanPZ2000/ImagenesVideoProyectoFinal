@@ -4,11 +4,12 @@ import cv2
 import numpy as np
 import os
 import sys
-from src.functions import deteccion_rostro, predict
+from src.functions import deteccion_rostro, predict, get_model_metrics
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import confusion_matrix
 from sklearn.svm import SVC
 import pickle
 
@@ -75,42 +76,24 @@ my_dict = {}
 #             my_dict[i, j, k] = matthews_corrcoef(y_test, svm_model.predict(X_test))
 #             print("voy en la iteracion {} {} {}".format(i, j, k))
 
-svm_model = SVC(C=10, kernel=kernel[0], degree=1)
+svm_model = SVC(C=10, kernel=kernel[0], degree=1)  # Es para 2 emociones
 svm_model.fit(X_train, y_train)
 # Se realiza la comparacion por genero
 lst_of_lst_distancia_men = np.load("distancias_men.npy")
 etiquetas_men = np.load("etiquetas_men.npy")
-X_men = svm_model.predict(lst_of_lst_distancia_men)
-f1_acurracy_men = matthews_corrcoef(X_men, etiquetas_men)
-
-contador_men = 0
-for index, item in enumerate(X_men):
-    if item == etiquetas_men[index]:
-        contador_men += 1
-porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst_distancia_men)
-print(
-    "El porcentaje de accuracy para del sistema para los hombres es de: {}% y coeficiente de matthews score de: {}".format(
-        porcentaje_accuracy_men, f1_acurracy_men
-    )
+confusion_matrix_men = get_model_metrics(
+    svm_model, lst_of_lst_distancia_men, etiquetas_men, "hombres"
 )
+
 
 lst_of_lst_distancia_women = np.load("distancias_women.npy")
 etiquetas_women = np.load("etiquetas_women.npy")
-X_women = svm_model.predict(lst_of_lst_distancia_women)
-
-f1_acurracy_women = matthews_corrcoef(X_women, etiquetas_women)
-contador_women = 0
-for index, item in enumerate(X_women):
-    if item == etiquetas_women[index]:
-        contador_women += 1
-
-porcentaje_accuracy_women = contador_women * 100 / len(lst_of_lst_distancia_women)
-print(
-    "El porcentaje de accuracy para del sistema para las mujeres es de: {}% y coeficiente de matthews score de: {}".format(
-        porcentaje_accuracy_women, f1_acurracy_women
-    )
+confusion_matrix_women = get_model_metrics(
+    svm_model, lst_of_lst_distancia_women, etiquetas_women, "mujeres"
 )
 a = 1
+confusion_matrix = get_model_metrics(svm_model, X_test, y_test, "general")
+
 
 cap = cv2.VideoCapture(0)
 # GPIO.setmode(GPIO.BCM)
@@ -120,7 +103,7 @@ cap = cv2.VideoCapture(0)
 contador = 70
 timer_1 = time.perf_counter()
 timer_2 = timer_1
-pTime=0
+pTime = 0
 # Ciclo
 while True:
     _, frame = cap.read()
@@ -187,11 +170,19 @@ while True:
 
     except:
         pass
-    cTime=time.time()
-    
-    fps=1/(cTime-pTime)
-    pTime=cTime
+    cTime = time.time()
 
-    cv2.putText(frame_copy_draw, f'FPS: {int(fps)}',(150,50),cv2.FONT_HERSHEY_COMPLEX,1,(255,255,0),1)
+    fps = 1 / (cTime - pTime)
+    pTime = cTime
+
+    cv2.putText(
+        frame_copy_draw,
+        f"FPS: {int(fps)}",
+        (150, 50),
+        cv2.FONT_HERSHEY_COMPLEX,
+        1,
+        (255, 255, 0),
+        1,
+    )
     cv2.imshow("Video", cv2.resize(frame_copy_draw, (1280, 720)))
     cv2.waitKey(5)
