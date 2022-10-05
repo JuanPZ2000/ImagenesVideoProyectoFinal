@@ -8,11 +8,7 @@ import pickle
 
 def lectura(path, gender):
     # data_dir_list = os.listdir(path)
-    data_dir_list = [
-        "happy",
-        "sadness"
-        # ,"surprise"
-    ]
+    data_dir_list = ["happy", "sadness", "surprise"]
     img_data_list = []
     lst_count = []
     counter = 0
@@ -45,8 +41,8 @@ for i in range(lst_count_male[-1]):
         etiquetas.append(0)  # Feli
     elif i >= lst_count_male[0] and i < lst_count_male[1]:
         etiquetas.append(1)  # tite
-    # elif i >= lst_count_male[1] and i < lst_count_male[2]:
-    #     etiquetas.append(2)  # solplise
+    elif i >= lst_count_male[1] and i < lst_count_male[2]:
+        etiquetas.append(2)  # solplise
 
 contador_etiquetas = 0
 for contador in range(len(images_male)):
@@ -86,8 +82,8 @@ for i in range(lst_count_female[-1]):
         etiquetas.append(0)  # Feli
     elif i >= lst_count_female[0] and i < lst_count_female[1]:
         etiquetas.append(1)  # tite
-    # elif i >= lst_count_female[1] and i < lst_count_female[2]:
-    #     etiquetas.append(2)  # solplise
+    elif i >= lst_count_female[1] and i < lst_count_female[2]:
+        etiquetas.append(2)  # solplise
 
 contador_etiquetas = 0
 for contador in range(len(images_female)):
