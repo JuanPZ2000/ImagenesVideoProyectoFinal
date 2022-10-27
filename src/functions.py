@@ -11,6 +11,7 @@ import pickle
 from sklearn.metrics import f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import matthews_corrcoef
+from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
 
 
@@ -22,10 +23,11 @@ def get_model_metrics(model, lst_of_lst, etiquetas, gender=None):
     confusion_matrix_men = confusion_matrix(etiquetas, X_men)
 
     contador_men = 0
-    for index, item in enumerate(X_men):
-        if item == etiquetas[index]:
-            contador_men += 1
-    porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst)
+    # for index, item in enumerate(X_men):
+    #     if item == etiquetas[index]:
+    #         contador_men += 1
+    # porcentaje_accuracy_men = contador_men * 100 / len(lst_of_lst)
+    porcentaje_accuracy_men = accuracy_score(etiquetas, X_men)
     print(
         "El porcentaje de accuracy para del sistema para {}  es de: {}% y coeficiente de matthews score de: {}, F1 score de {}".format(
             gender, porcentaje_accuracy_men, matheus_acurracy_men, f1_accuracy_men
